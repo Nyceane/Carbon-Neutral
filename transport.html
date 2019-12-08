@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8' />
+<title>Driving simulation</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.0/mapbox-gl.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.0/mapbox-gl.css' rel='stylesheet' />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body { margin: 0; padding: 0; }
+#map { position: absolute; top: 0; bottom: 0; width: 100%; };
+
+.container {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%)
+}
+
+.toggle-button {
+  position: absolute;
+  margin: 50px;
+  background: gray;
+  width: 80px;
+  height: 40px;
+  border-radius: 30px;
+  padding: 5px;
+  cursor: pointer;
+  transition: all 300ms ease-in-out;
+}
+
+.toggle-button > .inner-circle {
+  background: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: all 300ms ease-in-out;
+}
+
+.toggle-button.active {
+  background: #00b300;
+}
+
+.toggle-button.active > .inner-circle {
+  margin-left: 40px;
+}
+</style>
+<script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.27.2.js"></script>
+
+</head>
+<body>
+<div id='map'></div>
+	  <div class="container">
+    <div class="toggle-button">
+      <div class="inner-circle">
+
+      </div>
+    </div>
+  </div>
+<script>
+
+	mapboxgl.accessToken = '';
+	var map = new mapboxgl.Map({
+		container: 'map',
+		style: 'mapbox://styles/mapbox/streets-v11',
+		center: [16.552966, 59.370773],
+		zoom: 12
+	});
+
+	var coordinates = 
+	[
+		[16.6802985, 59.3672485],
+		[16.680835, 59.367438],
+		[16.6802985, 59.3672485],
+		[16.6802985, 59.3672485],
+		[16.681665, 59.367500],
+		[16.681678, 59.367418],
+		[16.681665, 59.367373],
+		[16.681670, 59.367317],
+		[16.681670, 59.367265],
+		[16.681679, 59.367195],
+		[16.681809, 59.367185],
+		[16.682065, 59.367190],
+		[16.682376, 59.367204],
+		[16.682660, 59.367196],
+		[16.683068, 59.367204],
+		[16.683476, 59.367215],
+		[16.684002, 59.367275],
+		[16.684372, 59.367461],
+		[16.684447, 59.367797],
+		[16.684109, 59.368065],
+		[16.683422, 59.368254],
+		[16.682537, 59.368385],
+		[16.681491, 59.368508],
+		[16.679951, 59.368650],
+		[16.678723, 59.368737],
+		[16.675761, 59.368944],
+		[16.672456, 59.369272],
+		[16.668358, 59.369726],
+		[16.663981, 59.370316],
+		[16.657984, 59.371212],
+		[16.652287, 59.372169],
+		[16.647105, 59.373229],
+		[16.641751, 59.374519],
+		[16.638175, 59.375563],
+		[16.632803, 59.376635],
+		[16.629403, 59.377061],
+		[16.624704, 59.377362],
+		[16.619554, 59.377220],
+		[16.613553, 59.376625],
+		[16.602221, 59.376137],
+		[16.596331, 59.377104],
+		[16.589501, 59.377565],
+		[16.584749, 59.377141],
+		[16.578108, 59.376374],
+		[16.571880, 59.376165],
+		[16.565958, 59.375575],
+		[16.557494, 59.372621],
+		[16.552966, 59.370773],
+		[16.547702, 59.368851],
+		[16.543571, 59.367534],
+		[16.540782, 59.366654],
+		[16.536726, 59.366129],
+		[16.532445, 59.366708],
+		[16.528239, 59.366938],
+		[16.525503, 59.366566],
+		[16.523104, 59.367548],
+		[16.518896, 59.368947],
+		[16.517149, 59.369365],
+		[16.516206, 59.368731],
+		[16.515096, 59.367933],
+		[16.514549, 59.367512],
+		[16.513755, 59.367132],
+		[16.512398, 59.367419],
+		[16.510708, 59.367865],
+		[16.508584, 59.368630],
+		[16.506948, 59.369330],
+		[16.505618, 59.369625],
+		[16.503858, 59.370155],
+		[16.501771, 59.370939],
+		[16.500993, 59.371256],
+		[16.498896, 59.370857],
+		[16.497378, 59.371018],
+		[16.494980, 59.371860],
+		[16.490018, 59.373162],
+		[16.486971, 59.374031],
+		[16.482358, 59.375201],
+		[16.476736, 59.375840],
+		[16.471726, 59.375977],
+		[16.469548, 59.375769],
+		[16.469398, 59.374714],
+		[16.469516, 59.374195],
+		[16.471212, 59.373217],
+		[16.471502, 59.372889],
+		[16.470794, 59.372457],
+		[16.469560, 59.372156],
+		[16.468606, 59.371910],
+		[16.468606, 59.371910],
+		[16.468606, 59.371910],
+		[16.468606, 59.371910],
+		[16.468606, 59.371910],
+		[16.468606, 59.371910]
+	]
+ 
+	var forward = false;
+	var i = 90;
+
+	function pointOnCircle(num) {
+		if(i >= 90)
+		{
+			forward = false;
+		}
+		else if (i <= 0)
+		{
+			forward = true;
+		}
+		if(forward)
+		{
+			i++;
+		}
+		else
+		{
+			i--;
+		}
+		//console.log(i);
+
+		return {
+			"type": "Point",
+			"coordinates": coordinates[i]
+		};
+	}
+ 
+	map.on('load', function () {
+	// Add a source and layer displaying a point which will be animated in a circle.
+		map.addSource('point', {
+			"type": "geojson",
+			"data": pointOnCircle(i)
+		});
+	 
+		map.addLayer({
+			"id": "point",
+			"source": "point",
+			"type": "circle",
+			"paint": {
+				"circle-radius": 10,
+				"circle-color": "#007cbf"
+			}
+		});
+
+ 
+	});
+
+		 	var j = 0;
+	 	var animate = false;
+		function animateMarker(timestamp) {
+			j++;
+			if(j >= 10 && animate)
+			{
+				j = 0;
+				map.getSource('point').setData(pointOnCircle(timestamp/1000));
+			}
+			// Update the data to a new position based on the animation timestamp. The
+			// divisor in the expression `timestamp / 1000` controls the animation speed.
+			// Request the next frame of the animation.
+			requestAnimationFrame(animateMarker);
+		}
+
+	function publish(user, data) {
+	  
+	    pubnub = new PubNub({
+	        publishKey : 'demo',
+	        subscribeKey : 'demo'
+	    })
+	      
+	    function publishSampleMessage() {
+	        console.log("Since we're publishing on subscribe connectEvent, we're sure we'll receive the following publish.");
+	        var publishConfig = {
+	            channel : "hello_world",
+	            message: { 
+	                title: "greeting",
+	                description: data,
+	                user:user
+	            }
+	        }
+	        pubnub.publish(publishConfig, function(status, response) {
+	            console.log(status, response);
+	        })
+	    }
+	      
+	    pubnub.addListener({
+	        status: function(statusEvent) {
+	            if (statusEvent.category === "PNConnectedCategory") {
+	                publishSampleMessage();
+	            }
+	        },
+	        message: function(msg) {
+	            console.log(msg.message.title);
+	            console.log(msg.message.description);
+	        },
+	        presence: function(presenceEvent) {
+	            // handle presence
+	        }
+	    })      
+	    console.log("Subscribing..");
+	    pubnub.subscribe({
+	        channels: ['hello_world'] 
+	    });
+	};
+	const toggle = document.querySelector('.toggle-button');
+
+	toggle.addEventListener('click', () => {
+	  toggle.classList.toggle('active');
+	  if(toggle.classList.value.includes('active'))
+	  {
+	  	//active
+	  	animate = true;
+		animateMarker(0);
+	  }
+	  else 
+	  {
+		animate = false;
+	  }
+	  
+	})
+
+</script>
+</body>
+</html>
